@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Text, VStack,Link, Menu, MenuButton, Portal, MenuList, MenuItem, useToast, Center } from "@chakra-ui/react"
+import { Avatar, Box, Flex, Text, VStack,Link, Menu, MenuButton, Portal, MenuList, MenuItem, useToast, } from "@chakra-ui/react"
 import  {BsInstagram} from "react-icons/bs"
 import {CgMoreO} from "react-icons/cg"
 
@@ -27,7 +27,10 @@ const UserHeader = () => {
         <Avatar
             name="Mark Zuckerberg"
             src="/zuck-avatar.png"
-            size={"xl"}
+            size={{
+                base:"md",
+                md:"xl"
+            }}
         />
     </Box>
     </Flex>
