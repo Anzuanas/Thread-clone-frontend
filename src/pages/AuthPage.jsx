@@ -1,10 +1,11 @@
+import Login from "../components/Login"
 import SignupCard from "../components/SignUpCard"
 
 
 const AuthPage = () => {
   return (
     <>
-      <SignupCard/>
+      <Login/>
     </>
   )
 }
