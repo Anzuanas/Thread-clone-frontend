@@ -8,6 +8,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Message from "./Message";
+import MessageInput from "./MessageInput";
 
 const MessageContainer = () => {
   return (
@@ -54,8 +55,12 @@ const MessageContainer = () => {
             </Flex>
           ))}
 
-          <Message />
+          <Message ownMessage={true}/>
+          <Message ownMessage={false}/>
+          <Message ownMessage={false}/>
+          <Message ownMessage={true}/>
       </Flex>
+      <MessageInput/>
     </Flex>
   );
 };
