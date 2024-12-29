@@ -8,8 +8,14 @@ import {
   useColorModeValue,
   WrapItem,
 } from "@chakra-ui/react";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
+import { BsCheck2All } from "react-icons/bs";
 
-const Conversation = () => {
+const Conversation = ({conversation}) => {
+  const user = conversation.participants[0]
+  const currentUser = useRecoilValue(userAtom)
+  const lastMessage = conversation.lastMessage
   return (
     <Flex
       gap={4}
@@ -37,10 +43,11 @@ const Conversation = () => {
 
       <Stack direction={"column"} fontSize={"sm"}>
         <Text fontWeight={"700"} display={"flex"} alignItems={"center"}>
-          shuhaib <Image src="Images/verified.png" w={4} h={4} ml={1} />
+          {user.username} <Image src="Images/verified.png" w={4} h={4} ml={1} />
         </Text>
         <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
-          Drop some annoyings ...
+          {currentUser._id === lastMessage.sender ? <BsCheck2All size={16}/> : ""}
+          {lastMessage.text.length > 18 ? lastMessage.text.substring(0,18)+"...":lastMessage.text}
         </Text>
       </Stack>
     </Flex>

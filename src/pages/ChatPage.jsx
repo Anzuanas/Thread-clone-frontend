@@ -11,8 +11,35 @@ import {
 import Conversation from "../components/Conversation";
 import {GiConversation} from "react-icons/gi"
 import MessageContainer from "../components/MessageContainer";
+import { useEffect, useState } from "react";
+import useShowToast from "../hooks/useShowToast";
+import { useRecoilState } from "recoil";
+import { conversationAtom } from "../atoms/messagesAtom";
 
 const ChatPage = () => {
+  const showToast = useShowToast();
+  const [lodaingConversations,setLoadingConversations] = useState(true);
+  const [conversations,setConversations] =  useRecoilState(conversationAtom)
+
+  useEffect(()=>{
+    const getConversation = async () => {
+      try {
+        const  res = await fetch("/api/messages/conversations")
+        const data = await res.json();
+        if(data.error){
+          showToast("Error",data.error,"error");
+          return  
+        }
+        console.log(data)
+        setConversations(data)
+      } catch (error) {
+        showToast("Error",error.message,"error");
+      }finally {
+        setLoadingConversations(false)
+      }
+    }
+    getConversation()
+  },[showToast,setConversations])
   return (
     <Box
       position={"absolute"}
@@ -79,11 +106,14 @@ const ChatPage = () => {
                 </Flex>
               </Flex>
             ))}
-
-          <Conversation />
-          <Conversation />
-          <Conversation />
-
+            {!lodaingConversations && (
+              conversations.map(conversation =>(
+                <Conversation key={conversation._id} conversation={conversation} />
+              ))
+            )}
+            
+          
+          
         </Flex>
         {/* <Flex
         flex={70}
