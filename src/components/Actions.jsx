@@ -171,7 +171,7 @@ const Actions = ({ post}) => {
           <ModalBody pb={6}>
             <FormControl>
               <Input
-                placeholder="Replies goes here..."
+                placeholder="Repies goes here..."
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
               />
@@ -186,7 +186,7 @@ const Actions = ({ post}) => {
               isLoading={isReplying}
               onClick={handleReply}
             >
-              Reply
+              Replay
             </Button>
           </ModalFooter>
         </ModalContent>
