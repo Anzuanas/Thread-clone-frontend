@@ -15,9 +15,9 @@ import { BsCheck2All } from "react-icons/bs";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 
 const Conversation =  ({ conversation }) => {
-  console.log("conv",conversation)
+
   const user = conversation?.participants?.[0];
-  console.log("user",user)
+  
   const lastMessage = conversation.lastMessage;
   const currentUser = useRecoilValue(userAtom);
   const [selectedConversation, setSelectedConversation] = useRecoilState(
@@ -25,7 +25,7 @@ const Conversation =  ({ conversation }) => {
   );
   const colorMode = useColorMode()
 
-  console.log(selectedConversation)
+ 
 
   if (!user) {
     return null; // or return some placeholder if you prefer

@@ -12,15 +12,20 @@ import Conversation from "../components/Conversation";
 import { GiConversation } from "react-icons/gi";
 import MessageContainer from "../components/MessageContainer";
 import useShowToast from "../hooks/useShowToast";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import {  useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAtom";
+
+import userAtom from "../atoms/userAtom";
 
 const ChatPage = () => {
   const showToast = useShowToast();
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const [selectedConversation, setselectedConversation] = useRecoilState(selectedConversationAtom);
+  const [searchText,setSearchText]  = useState("")
+  const [searchingUser,setSearchingUser] =useState(false)
+  const currentUser = useRecoilValue (userAtom)
 
   useEffect(() => {
     const getConversations = async () => {
@@ -32,7 +37,6 @@ const ChatPage = () => {
           showToast("Error", data.error, "error");
           return;
         }
-        console.log(data);
         setConversations(data);
       } catch (error) {
         showToast("Error", error.message, "error");
@@ -42,6 +46,71 @@ const ChatPage = () => {
     };
     getConversations();
   }, [showToast, setConversations]);
+
+  const handleConversationSearch = async (e) => {
+    e.preventDefault();
+    setSearchingUser(true)
+    
+    try {
+      const res = await fetch(`/api/users/profile/${searchText}`);
+      const searchedUser = await res.json();
+      console.log("srchdusr",searchedUser)
+      if (searchedUser.error) {
+        console.log("Error in searched user:", searchedUser.error);
+        showToast("Error", searchedUser.error, "error");
+        return;
+      }
+      
+      if (searchedUser._id === currentUser._id) {
+        console.log("User is trying to message themselves");
+        showToast("Error", "You cannot message yourself", "error");
+        return;
+      }
+      
+      const existingConversation = conversations.find(
+        conversation =>
+          conversation.participants &&
+          conversation.participants[0] &&
+          conversation.participants[0]._id === searchedUser._id
+      );
+      
+      if (existingConversation) {
+        console.log("User already in conversation:", existingConversation);
+        setselectedConversation({
+          _id: existingConversation._id,
+          userId: searchedUser._id,
+          username: searchedUser.username,
+          userProfilePic: searchedUser.profilePic,
+        });
+        return;
+      }
+      
+      console.log("Creating mock conversation...");
+      const mockConversation = {
+        mock: true,
+        lastMessage: {
+          text: "",
+          sender: "",
+        },
+        _id: crypto.randomUUID(),
+        participants: [
+          {
+            _id: searchedUser._id,
+            username: searchedUser.username,
+            profilePic: searchedUser.profilePic,
+          },
+        ],
+      };
+      console.log("mockonee", mockConversation);
+  
+      setConversations((prevConvs) => [...prevConvs, mockConversation]);
+    } catch (error) {
+      console.log("Error during fetch:", error);
+      showToast("Error", error.message, "error");
+    } finally {
+      setSearchingUser(false);
+    }
+  };
 
   return (
     <Box
@@ -83,10 +152,12 @@ const ChatPage = () => {
           >
             Your Conversation
           </Text>
-          <form>
+          <form onSubmit={handleConversationSearch}>
             <Flex alignItems={"center"} gap={2}>
-              <Input placeholder="Search for a user" />
-              <Button size={"sm"}>
+              <Input placeholder="Search for a user" onChange={(e) => {
+                setSearchText(e.target.value);
+              }}/>
+              <Button size={"sm"} onClick={handleConversationSearch} isLoading={searchingUser}>
                 <SearchIcon />
               </Button>
             </Flex>
