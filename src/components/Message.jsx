@@ -1,12 +1,14 @@
-import { Avatar, Box,Image, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Box,Image, Flex, Text, Skeleton } from "@chakra-ui/react";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 import {BsCheck2All} from 'react-icons/bs'
+import { useState } from "react";
 
 const Message = ({ownMessage, message}) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom)
   const user = useRecoilValue(userAtom)
+  const [imgLoaded,setImgLoaded] = useState(false)
   
   return (
     <>
@@ -21,13 +23,29 @@ const Message = ({ownMessage, message}) => {
 
           </Flex>
           )}
-          {message.img &&(
+          {message.img && !imgLoaded &&(
             <Flex mt={5} w={"200px"}>
               <Image
               src={message.img}
+              hidden onLoad={() => setImgLoaded(true)}
               alt='Message image'
               borderRadius={4}
               />
+              <Skeleton h={"200px"} w={"200px"}/>
+            </Flex>
+          )}
+
+{message.img && imgLoaded &&(
+            <Flex mt={5} w={"200px"}>
+              <Image
+              src={message.img}
+              
+              alt='Message image'
+              borderRadius={4}
+              />
+               <Box alignSelf={"flex-end"} ml={1} color={message.seen ? "blue.400" : ""} fontWeight={"bold"}>
+              <BsCheck2All size={16}/>
+            </Box>
             </Flex>
           )}
           <Avatar src={user.profilePic} w={7} h={7} />
@@ -40,17 +58,29 @@ const Message = ({ownMessage, message}) => {
              {message.text}
            </Text>
           )}
-
-{message.img &&(
+{message.img && !imgLoaded &&(
             <Flex mt={5} w={"200px"}>
               <Image
               src={message.img}
+              hidden onLoad={() => setImgLoaded(true)}
               alt='Message image'
               borderRadius={4}
               />
+              <Skeleton h={"200px"} w={"200px"}/>
             </Flex>
           )}
-         
+
+{message.img && imgLoaded &&(
+            <Flex mt={5} w={"200px"}>
+              <Image
+              src={message.img}
+              
+              alt='Message image'
+              borderRadius={4}
+              />
+             
+            </Flex>
+          )}         
         </Flex>
       )}
     </>
